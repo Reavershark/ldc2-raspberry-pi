@@ -1,15 +1,17 @@
 FROM debian:buster
 
 RUN apt update
-RUN apt install gcc-arm-linux-gnueabihf ninja-build cmake ldc git -y
+RUN apt install gcc-arm-linux-gnueabihf ninja-build cmake ldc git dub -y
 
 WORKDIR /build
 RUN mkdir /lib/arm
 
+# LDC runtime
 RUN export CC=arm-linux-gnueabihf-gcc && \
     ldc-build-runtime --ninja --dFlags="-w;-mtriple=arm-linux-gnueabihf" && \
     mv ldc-build-runtime.tmp /lib/arm
 
+# OpenSSL
 RUN git clone https://github.com/openssl/openssl --depth 1 && \
     cd openssl && \
     export INSTALL_DIR=/lib/arm && \
@@ -19,6 +21,7 @@ RUN git clone https://github.com/openssl/openssl --depth 1 && \
     cd .. && \
     rm openssl -rf
 
+# Zlib
 RUN git clone https://github.com/madler/zlib.git --depth 1 && \
     cd zlib && \
     export CC=arm-linux-gnueabihf-gcc INSTALL_DIR=/lib/arm && \
@@ -31,4 +34,4 @@ RUN git clone https://github.com/madler/zlib.git --depth 1 && \
 COPY ldc2-rpi /usr/bin/ldc2-rpi
 
 WORKDIR /src
-ENTRYPOINT ["/usr/bin/ldc2-rpi"]
+CMD ["/usr/bin/ldc2-rpi"]
