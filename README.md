@@ -1,5 +1,5 @@
 # ldc2 cross compiler for the Raspberry Pi
-Docker container for cross compiling D code to the Raspberry pi
+Docker container for cross compiling D code to the Raspberry pi.
 
 Also contains cross-compiled versions of openssl and zlib, which are dependencies of [vibe-d](https://vibed.org/).
 
@@ -36,6 +36,10 @@ ssh pi@raspberry
 > [main(----) INF] Listening for requests on http://127.0.0.1:8080/
 > [main(----) INF] Please open http://127.0.0.1:8080/ in your browser.
 ```
+
+## Todo
+ - Set newly created files ownership to current user instead of root, use `sudo chmown` for now.
+ - Prevent dub from downloading all packages on every build.
 
 ## Note
 Heavily inspired by https://github.com/pander86/raspberry_vibed
