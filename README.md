@@ -1,5 +1,5 @@
 # ldc2 cross compiler for the Raspberry Pi
-Docker container for cross compiling D code to the Raspberry pi.
+Docker container for cross compiling D code to the Raspberry Pi.
 
 Also contains cross-compiled versions of openssl and zlib, which are dependencies of [vibe-d](https://vibed.org/).
 
