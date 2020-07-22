@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+/usr/bin/dub $@ --compiler=/usr/local/bin/ldc2

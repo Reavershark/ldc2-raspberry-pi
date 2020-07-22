@@ -16,8 +16,8 @@ docker run --rm -v "$(pwd)":/src ldc2-rpi ldc2-rpi app.d
 
 Example:
 ```
-echo "import std.stdio; void main() {writeln("Hello D");} > app.d
-docker run --rm -v "$(pwd)":/src ldc2-rpi ldc2-rpi app.d
+echo 'import std.stdio; void main() {writeln("Hello D");}' > app.d
+docker run --rm -v "$(pwd)":/src ldc2-rpi ldc2 app.d
 rsync ./app pi@raspberry:
 ssh pi@raspberry
 ./app
@@ -27,12 +27,14 @@ ssh pi@raspberry
 With dub:
 ```
 mkdir example && cd example
-dub init -n
-docker run --rm -v "$(pwd)":/src ldc2-rpi dub build --compiler=ldc2-rpi
+dub init -t vibe.d -n
+docker run --rm -v "$(pwd)":/src ldc2-rpi dub build --override-config vibe-d:tls/openssl-1.1
 rsync ./example pi@raspberry:
 ssh pi@raspberry
 ./example
-> Edit source/app.d to start your project.
+> [main(----) INF] Listening for requests on http://[::1]:8080/
+> [main(----) INF] Listening for requests on http://127.0.0.1:8080/
+> [main(----) INF] Please open http://127.0.0.1:8080/ in your browser.
 ```
 
 ## Note

@@ -1,8 +1,2 @@
 #!/usr/bin/env bash
-/usr/bin/ldc2 \
-    -mtriple=arm-linux-gnueabihf \
-    -gcc=arm-linux-gnueabihf-gcc \
-    -L=-L/lib/arm/ldc-build-runtime.tmp/lib \
-    -L=-L/lib/arm/openssl/lib \
-    -L=-L/lib/arm/zlib/lib \
-    $@
+/usr/bin/ldc2 -mtriple=arm-linux-gnueabihf -gcc=arm-linux-gnueabihf-gcc -L=-L/usr/arm-linux-gnueabihf/lib $@

@@ -1,37 +1,42 @@
 FROM debian:buster
 
 RUN apt update
-RUN apt install gcc-arm-linux-gnueabihf ninja-build cmake ldc git dub -y
+RUN apt install gcc-arm-linux-gnueabihf ninja-build cmake ldc wget perl dub -y
 
 WORKDIR /build
-RUN mkdir /lib/arm
 
 # LDC runtime
 RUN export CC=arm-linux-gnueabihf-gcc && \
     ldc-build-runtime --ninja --dFlags="-w;-mtriple=arm-linux-gnueabihf" && \
-    mv ldc-build-runtime.tmp /lib/arm
+    mv ldc-build-runtime.tmp/lib/* /usr/arm-linux-gnueabihf/lib && \
+    rm ldc-build-runtime.tmp -rf
 
 # OpenSSL
-RUN git clone https://github.com/openssl/openssl --depth 1 && \
-    cd openssl && \
-    export INSTALL_DIR=/lib/arm && \
+RUN export OPENSSL_VERSION=1_1_1g INSTALL_DIR=/usr/arm-linux-gnueabihf && \
+    wget https://github.com/openssl/openssl/archive/OpenSSL_$OPENSSL_VERSION.tar.gz && \
+    tar xzf OpenSSL_$OPENSSL_VERSION.tar.gz && \
+    rm OpenSSL_$OPENSSL_VERSION.tar.gz && \
+    cd openssl-OpenSSL_$OPENSSL_VERSION && \
     ./Configure linux-generic32 shared --prefix=$INSTALL_DIR --openssldir=$INSTALL_DIR/openssl --cross-compile-prefix=arm-linux-gnueabihf- && \
     make && \
     make install && \
     cd .. && \
-    rm openssl -rf
+    rm openssl-OpenSSL_$OPENSSL_VERSION -rf
 
 # Zlib
-RUN git clone https://github.com/madler/zlib.git --depth 1 && \
-    cd zlib && \
-    export CC=arm-linux-gnueabihf-gcc INSTALL_DIR=/lib/arm && \
+RUN export ZLIB_VERSION=1.2.11 CC=arm-linux-gnueabihf-gcc INSTALL_DIR=/usr/arm-linux-gnueabihf && \
+    wget https://www.zlib.net/zlib-$ZLIB_VERSION.tar.gz && \
+    tar xzf zlib-$ZLIB_VERSION.tar.gz && \
+    rm zlib-$ZLIB_VERSION.tar.gz && \
+    cd zlib-$ZLIB_VERSION && \
     ./configure --prefix=$INSTALL_DIR && \
     make && \
     make install && \
     cd .. && \
-    rm zlib -rf
+    rm zlib-$ZLIB_VERSION -rf
 
-COPY ldc2-rpi /usr/bin/ldc2-rpi
+COPY ldc2-rpi /usr/local/bin/ldc2
+COPY dub-rpi /usr/local/bin/dub
 
 WORKDIR /src
-CMD ["/usr/bin/ldc2-rpi"]
+CMD ["/usr/local/bin/ldc2"]
