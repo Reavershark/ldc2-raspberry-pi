@@ -11,7 +11,7 @@ docker build -t ldc2-rpi .
 
 Run with:
 ```
-docker run --rm -v "$(pwd)":/src ldc2-rpi ldc2-rpi app.d
+docker run --rm -v "$(pwd)":/src ldc2-rpi ldc2 app.d
 ```
 
 Example:
