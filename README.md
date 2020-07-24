@@ -38,7 +38,7 @@ ssh pi@raspberry
 ```
 
 ## Todo
- - Set newly created files ownership to current user instead of root, use `sudo chmown` for now.
+ - Set newly created files ownership to current user instead of root, use `sudo chown` for now.
  - Prevent dub from downloading all packages on every build.
 
 ## Note
