@@ -3,21 +3,28 @@ Docker container for cross compiling D code to the Raspberry Pi.
 
 Also contains cross-compiled versions of openssl and zlib, which are dependencies of [vibe-d](https://vibed.org/).
 
+Builds are available from [Docker hub](https://hub.docker.com/r/reavershark/ldc2-rpi).
+
 ## Usage
-Build the image:
+Pull the image from [Docker hub](https://hub.docker.com/r/reavershark/ldc2-rpi):
+```
+docker pull reavershark/ldc2-rpi
+```
+
+Alternatively build the image yourself (Optional) with:
 ```
 docker build -t ldc2-rpi .
 ```
 
 Run with:
 ```
-docker run --rm -v "$(pwd)":/src ldc2-rpi ldc2 app.d
+docker run --rm -v "$(pwd)":/src reavershark/ldc2-rpi ldc2 app.d
 ```
 
 Example:
 ```
 echo 'import std.stdio; void main() {writeln("Hello D");}' > app.d
-docker run --rm -v "$(pwd)":/src ldc2-rpi ldc2 app.d
+docker run --rm -v "$(pwd)":/src reavershark/ldc2-rpi ldc2 app.d
 rsync ./app pi@raspberry:
 ssh pi@raspberry
 ./app
@@ -28,7 +35,7 @@ With dub:
 ```
 mkdir example && cd example
 dub init -t vibe.d -n
-docker run --rm -v "$(pwd)":/src ldc2-rpi dub build --override-config vibe-d:tls/openssl-1.1
+docker run --rm -v "$(pwd)":/src reavershark/ldc2-rpi dub build --override-config vibe-d:tls/openssl-1.1
 rsync ./example pi@raspberry:
 ssh pi@raspberry
 ./example
