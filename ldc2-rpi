@@ -1,2 +1,7 @@
 #!/usr/bin/env bash
+finish() {
+    # Fix ownership of new files
+    chown -R $(stat -c '%u:%g' /src) /src
+}
+trap finish EXIT
 /usr/bin/ldc2 -mtriple=arm-linux-gnueabihf -gcc=arm-linux-gnueabihf-gcc -L=-L/usr/arm-linux-gnueabihf/lib $@
