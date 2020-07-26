@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 finish() {
     # Fix ownership of new files
-    chown -R $(stat -c '%u:%g' /src) /src
+    host_uid=$(stat -c '%u:%g' /src)
+    chown -R $host_uid /src
+    if [ -d /root/.dub ]; then
+        chown -R $host_uid /root/.dub
+    fi
 }
 trap finish EXIT
 /usr/bin/dub $@ --compiler=/usr/local/bin/ldc2
