@@ -1,5 +1,5 @@
 # ldc2 cross compiler for the Raspberry Pi
-Docker image for cross compiling D code to the Raspberry Pi with ldc2 or dub.
+Docker image for cross compiling D code to Raspbian buster with ldc2 or dub.
 
 Also contains cross compiled versions of OpenSSL and zlib, which are dependencies of [vibe-d](https://vibed.org/).
 
@@ -79,6 +79,9 @@ docker run --rm \
   -v "$HOME/.dub":/root/.dub \
   ldc2-rpi dub build
 ```
+
+### Contributing
+Issues, suggestions and pull requests are always welcome!
 
 ### Sources
 - Heavily inspired by https://github.com/pander86/raspberry_vibed.
