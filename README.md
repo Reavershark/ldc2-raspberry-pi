@@ -1,5 +1,5 @@
 # ldc2 cross compiler for the Raspberry Pi
-Docker image for cross compiling D code to Raspbian buster with ldc2 or dub.
+Docker image for cross compiling D code to Raspberry Pi OS with ldc2 or dub.
 
 Also contains cross compiled versions of OpenSSL and zlib, which are dependencies of [vibe-d](https://vibed.org/).
 
@@ -8,34 +8,41 @@ Builds are available from [Docker hub](https://hub.docker.com/r/reavershark/ldc2
 ## Obtaining
 Pull the image from [Docker hub](https://hub.docker.com/r/reavershark/ldc2-rpi):
 ```
-docker pull reavershark/ldc2-rpi
+docker pull reavershark/ldc2-rpi:armv7hf # Raspbery Pi OS 32-bit
+docker pull reavershark/ldc2-rpi:aarch64 # Raspbery Pi OS 64-bit
 ```
 
-Alternatively build the image yourself (Optional) with:
+The full list of tags is as follows:
+  - armv7hf (latest, currently bullseye)
+  - armv7hf-bullseye
+  - aarch64 (latest, currently bullseye)
+  - aarch64-bullseye
+
+Or you can build the image yourself from this repo with a custom triple (takes a lot of time):
 ```
-docker build -t ldc2-rpi .
+docker build -t ldc2-rpi --build-arg TARGET_TRIPLE=aarch64-linux-gnu .
 ```
 
 ## Usage
 Running `ldc2`:
 ```
-docker run --rm -v "$(pwd)":/src reavershark/ldc2-rpi ldc2 app.d
+docker run --rm -v "$(pwd)":/src reavershark/ldc2-rpi:armv7hf ldc2 app.d
 ```
 
 Running `dub build`:
 ```
-docker run --rm -v "$(pwd)":/src -v "$HOME/.dub":/root/.dub reavershark/ldc2-rpi dub build
+docker run --rm -v "$(pwd)":/src -v "$HOME/.dub":/root/.dub reavershark/ldc2-rpi:armv7hf dub build
 ```
 
 ## Examples
 Compiling and running the example code from [run.dlang.io](https://run.dlang.io/):
 ```
 echo 'import std.stdio; void main() {writeln("Hello D");}' > app.d
-docker run --rm -v "$(pwd)":/src reavershark/ldc2-rpi ldc2 app.d
+docker run --rm -v "$(pwd)":/src reavershark/ldc2-rpi:armv7hf ldc2 app.d
 
-rsync ./app pi@raspberry:
+scp app pi@raspberry:
 ssh pi@raspberry
-./app
+$ ./app
 > Hello D
 ```
 
@@ -44,14 +51,14 @@ Compiling and running a minimal vibe.d http server with dub:
 mkdir example && cd example
 dub init -t vibe.d -n
 docker run --rm \
-    -v "$(pwd)":/src \
-    -v "$HOME/.dub":/root/.dub \
-    reavershark/ldc2-rpi \
-    dub build --override-config vibe-d:tls/openssl-1.1
+  -v "$(pwd)":/src \
+  -v "$HOME/.dub":/root/.dub \
+  reavershark/ldc2-rpi:armv7hf \
+  dub build
 
-rsync ./example pi@raspberry:
+scp example pi@raspberry:
 ssh pi@raspberry
-./example
+$ ./example
 > [main(----) INF] Listening for requests on http://[::1]:8080/
 > [main(----) INF] Listening for requests on http://127.0.0.1:8080/
 > [main(----) INF] Please open http://127.0.0.1:8080/ in your browser.
@@ -62,22 +69,24 @@ ssh pi@raspberry
 Passing `-v "$HOME/.dub":/root/.dub` to `docker run` avoids redownloading and rebuilding dependencies.
 
 ### Permissions
-Permissions on all files created in `/src` and `/root/.dub` are set to the user who owns the `/src` after runnning `dub` or `ldc2`.
+After running `dub` or `ldc2`, permissions on all files created in `/src` and `/root/.dub` are set to the user who owns the `/src` directory (usually the user executing `docker run`).
 
 ### Dynamic libraries
-Cross-compiled libraries currently in `/usr/lib/arm-linux-gnueabihf`. You can easily add your own dependencies as a volume.
-Example for the wiringPi library:
+Cross-compiled libraries reside in `/cross-libs/`.
+You can easily add your own dependencies as volumes.
+
+Example for adding the wiringPi library to a project: (outdated)
 ```
 ssh pi@raspberry -t sudo apt install wiringpi -y
 mkdir lib
-rsync pi@raspberry:/usr/lib/libwiringPi.so.2.50 lib/
+scp pi@raspberry:/usr/lib/libwiringPi.so.2.50 lib/
 
 docker run --rm \
-  -v "$(pwd)"/lib/libwiringPi.so.2.50:/usr/arm-linux-gnueabihf/lib/libwiringPi.so.2.50 \
-  -v "$(pwd)"/lib/libwiringPi.so.2.50:/usr/arm-linux-gnueabihf/lib/libwiringPi.so \
   -v "$(pwd)":/src \
   -v "$HOME/.dub":/root/.dub \
-  ldc2-rpi dub build
+  -v "$(pwd)"/lib/libwiringPi.so.2.50:/cross-libs/libwiringPi.so.2.50 \
+  -v "$(pwd)"/lib/libwiringPi.so.2.50:/cross-libs/libwiringPi.so \
+  ldc2-rpi:armv7hf dub build
 ```
 
 ### Contributing
